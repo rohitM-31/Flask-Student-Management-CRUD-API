@@ -1,0 +1,68 @@
+from flask import Flask,jsonify,request
+app=Flask(__name__)
+students=[]
+
+#CREATE
+@app.route("/students",methods=['POST'])
+def add_student():
+    data=request.get_json()
+    student={
+        "id":data["id"],
+        "name":data["name"]
+    }
+    students.append(student)
+    return jsonify({
+        "message":"Student added Successfully",
+        "student":student
+    }),201
+    
+
+#GET ALL STUDENTS 
+@app.route("/getStudents",methods=['GET'])
+def get_students():
+    return jsonify(students)
+
+#DELETE 
+@app.route("/delStudent/<int:id>",methods=['DELETE'])
+def del_students(id):
+    for student in students:
+        if student["id"]==id:
+            students.remove(student)
+            return jsonify({
+                "message":"Student Removed Successfully",
+                
+            }),200
+    return jsonify({
+        "message":"Student not Found",
+    }),404
+
+#UPDATE 
+@app.route("/updatestudents/<int:id>",methods=["PUT"])
+def update_students(id):
+    data=request.get_json()
+    for student in students:
+        if student["id"]==id:
+            student["name"]=data["name"]
+            return jsonify({
+                "message":"Student Updated Successfully",
+            }),200
+    return jsonify({
+        "message":"Stduent not FOund",
+    }),404
+
+#PATCH 
+@app.route("/updatepatch/<int:id>",methods=["PATCH"])
+def patch_students(id):
+    data=request.get_json()
+    for student in students:
+        if student["id"]==id:
+            if "name" in data:
+                student["name"]=data["name"]
+            return jsonify({
+                "message":"Student Updated Successfully",
+            }),200
+    return jsonify({
+        "message":"Student not Found",
+    }),404
+if __name__=='__main__':
+    app.run(debug=True)
